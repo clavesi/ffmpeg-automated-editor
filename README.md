@@ -15,7 +15,8 @@ This project uses the [ffmpeg-python](https://github.com/kkroening/ffmpeg-python
 2. Do not open up the folders created in frames/ until the program finishes as the command prompt will deny access to that folder and break
 
 ### How to Use
-1. Place desired videos into **imports/**
-2. Run **editor.py** and select any variables desired
-3. Wait for edited video to be created
-4. Enjoy your new video
+1. Delete all .gitkeep's in directories
+2. Place desired videos into **imports/**
+3. Run **editor.py** and select any variables desired
+4. Wait for edited video to be created
+5. Enjoy your new video
