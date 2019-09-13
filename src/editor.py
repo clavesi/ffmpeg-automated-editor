@@ -12,6 +12,14 @@ videos = os.listdir('imports/')
 finframe_list = []
 vidavg_list = []
 
+# Delete all .gitkeeps
+if os.path.exists('exports/.gitkeep'):
+    os.remove('exports/.gitkeep')
+    os.remove('frames/color/.gitkeep')
+    os.remove('frames/final/.gitkeep')
+    os.remove('frames/gray/.gitkeep')
+    os.remove('imports/.gitkeep')
+
 def genframes():
     # Generate color frames
     for video in range(len(videos)):
