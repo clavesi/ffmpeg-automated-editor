@@ -6,13 +6,18 @@ import subprocess
 import shutil
 from random import randint
 import time
+import argparse
+
+parser = argparse.ArgumentParser(description='All avaliable variables that you can access')
+parser.add_argument( '--framerate', dest='frames', type=int, help='framerate of the video, int')
+args = parser.parse_args()
+print(args.frames)
 
 start_time = time.time() # how long does it take to calculate averages
 videos = os.listdir('imports/')
 finframe_list = [] # global variable
 vidavg_list = [] # global varialbe
 
-# TODO Take arguments
 # TODO Catch errors
 
 # Delete all .gitkeeps
@@ -33,7 +38,7 @@ def genframes():
             os.mkdir(f'frames/color/video-{video}')
         else:
             os.mkdir(f'frames/color/video-{video}')
-        subprocess.run(f'ffmpeg -i imports/{videos[video]} -vf fps=15/1 frames/color/video-{video}/frame%04d.jpg -hide_banner')
+        subprocess.run(f'ffmpeg -i imports/{videos[video]} -vf fps={args.frames}/1 frames/color/video-{video}/frame%04d.jpg -hide_banner')
 
     # Generate grayscale frames
     for video in videos:
@@ -59,7 +64,6 @@ def avgframes():
     totalavg = []
     global finframe_list
     global vidavg_list
-    framerate = 30 # FIXME set framerate equal to argparse
 
     # Check chunks of every frame in the frames folder
     for folder in folders:
@@ -96,7 +100,7 @@ def avgframes():
         print(f'Video is {len(vidavg)} frames long')
 
         # Vary clip lengths
-        finframe = (randint(3, 7) * framerate) + vidavg.index(chunkmax)
+        finframe = (randint(3, 7) * args.frames) + vidavg.index(chunkmax)
         finframe_list.append(finframe)
         vidavg_list.append(vidavg.index(chunkmax))
         print('Final frame would be:', finframe)
@@ -133,7 +137,7 @@ def exportvideo():
         (
             ffmpeg
             .input(f'frames/final/vid{i}-frame%04d.jpg')
-            .output(f'exports/video{i+1}.mp4', framerate=30)
+            .output(f'exports/video{i+1}.mp4', framerate=args.frames)
             .overwrite_output()
             .run()
         )
@@ -155,15 +159,15 @@ def exportvideo():
                 exports = os.listdir('exports/')
 
             if not exports[0] == 'vid0.mp4': # If two clips have NOT been combined yet
-                vid0 = ffmpeg.input(f'exports/{exports[0]}', ss=vidavg_list[0]/30, t=finframe_list[0]/30 - vidavg_list[0]/30)
-                vid1 = ffmpeg.input(f'exports/{exports[1]}', ss=vidavg_list[1]/30, t=finframe_list[1]/30 - vidavg_list[1]/30)
+                vid0 = ffmpeg.input(f'exports/{exports[0]}', ss=vidavg_list[0]/args.frames, t=finframe_list[0]/args.frames - vidavg_list[0]/args.frames)
+                vid1 = ffmpeg.input(f'exports/{exports[1]}', ss=vidavg_list[1]/args.frames, t=finframe_list[1]/args.frames - vidavg_list[1]/args.frames)
                 (
                     ffmpeg
                     .concat(
                         vid0,
                         vid1,
                     )
-                    .output('exports/export.mp4', framerate=30)
+                    .output('exports/export.mp4', framerate=args.frames)
                     .run()
                 )
                 vidavg_list.pop(1) # as videos get combined,
@@ -172,7 +176,7 @@ def exportvideo():
                 finframe_list.pop(0)
             else: # If two clips HAVE been combined
                 vid0 = ffmpeg.input(f'exports/{exports[0]}')
-                vid1 = ffmpeg.input(f'exports/{exports[1]}', ss=vidavg_list[0]/30, t=finframe_list[0]/30 - vidavg_list[0]/30)
+                vid1 = ffmpeg.input(f'exports/{exports[1]}', ss=vidavg_list[0]/args.frames, t=finframe_list[0]/args.frames - vidavg_list[0]/args.frames)
                 if len(vidavg_list) > 1 and len(finframe_list) > 1:
                     vidavg_list.pop(0)
                     finframe_list.pop(0)
@@ -182,7 +186,7 @@ def exportvideo():
                         vid0,
                         vid1,
                     )
-                    .output('exports/export.mp4', framerate=30)
+                    .output('exports/export.mp4', framerate=args.frames)
                     .run()
                 )
             # The newly created 'export.mp4' does not get counted yet in the exports list.
@@ -192,6 +196,15 @@ def exportvideo():
             print('All videos edited together!')
 exportvideo()
 
-def cleanup(): # TODO Delete video frame folders
-    print('blank')
+def cleanup():
+    color_folders = os.listdir('frames/color/') # Delete colored frames
+    for folders in color_folders:
+        shutil.rmtree(f'frames/color/{folders}')
+
+    gray_folders = os.listdir('frames/gray/') # Delete gray frames
+    for folders in gray_folders:
+        shutil.rmtree(f'frames/gray/{folders}')
+
+    shutil.rmtree('frames/final') # Reset final folder
+    os.mkdir(f'frames/final')
 cleanup()
