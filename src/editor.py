@@ -7,46 +7,57 @@ import shutil
 from random import randint
 import time
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(description='All avaliable variables that you can access')
-parser.add_argument( '--framerate', dest='frames', type=int, help='framerate of the video, int')
+parser.add_argument( '-fps', '--framerate', dest='frames', type=int, help='framerate of the video, int')
 args = parser.parse_args()
-print(args.frames)
+if args.frames is None:
+    print('No framerate provided')
+    sys.exit()
 
 start_time = time.time() # how long does it take to calculate averages
 videos = os.listdir('imports/')
 finframe_list = [] # global variable
 vidavg_list = [] # global varialbe
 
-# TODO Catch errors
+def cleanup():
+    # Delete all .gitkeeps
+    if os.path.exists('exports/.gitkeep'):
+        os.remove('exports/.gitkeep')
+    if os.path.exists('frames/color/.gitkeep'):
+        os.remove('frames/color/.gitkeep')
+    if os.path.exists('frames/final/.gitkeep'):
+        os.remove('frames/final/.gitkeep')
+    if os.path.exists('frames/gray/.gitkeep'):
+        os.remove('frames/gray/.gitkeep')
+    if os.path.exists('imports/.gitkeep'):
+        os.remove('imports/.gitkeep')
 
-# Delete all .gitkeeps
-if os.path.exists('exports/.gitkeep'):
-    os.remove('exports/.gitkeep')
-    os.remove('frames/color/.gitkeep')
-    os.remove('frames/final/.gitkeep')
-    os.remove('frames/gray/.gitkeep')
-    os.remove('imports/.gitkeep')
+    # Delete frame folders
+    color_folders = os.listdir('frames/color/') # Delete colored frames
+    for folders in color_folders:
+        shutil.rmtree(f'frames/color/{folders}')
+
+    gray_folders = os.listdir('frames/gray/') # Delete gray frames
+    for folders in gray_folders:
+        shutil.rmtree(f'frames/gray/{folders}')
+
+    shutil.rmtree('frames/final') # Delete final folder
+    os.mkdir(f'frames/final')
+cleanup()
 
 # Generate colored and grayscale frames for all videos
 def genframes():
     # Generate color frames
     for video in range(len(videos)):
         print(videos[video])
-        if os.path.exists(f'frames/color/video-{video}'):
-            shutil.rmtree(f'frames/color/video-{video}')
-            os.mkdir(f'frames/color/video-{video}')
-        else:
-            os.mkdir(f'frames/color/video-{video}')
+        os.mkdir(f'frames/color/video-{video}')
         subprocess.run(f'ffmpeg -i imports/{videos[video]} -vf fps={args.frames}/1 frames/color/video-{video}/frame%04d.jpg -hide_banner')
 
     # Generate grayscale frames
     for video in videos:
-        if os.path.exists(f'frames/gray/video-{videos.index(video)}'):
-            shutil.rmtree(f'frames/gray/video-{videos.index(video)}')
-            os.mkdir(f'frames/gray/video-{videos.index(video)}')
-        else:
-            os.mkdir(f'frames/gray/video-{videos.index(video)}')
+        os.mkdir(f'frames/gray/video-{videos.index(video)}')
         (
             ffmpeg
             .input(f'frames/color/video-{videos.index(video)}/frame%04d.jpg')
@@ -96,13 +107,16 @@ def avgframes():
         
         print('avg:', mean(totalavg))
         print('max:', chunkmax)
-        print(vidavg.index(chunkmax))
-        print(f'Video is {len(vidavg)} frames long')
+        vidavg_list.append(vidavg.index(chunkmax))
 
         # Vary clip lengths
         finframe = (randint(3, 7) * args.frames) + vidavg.index(chunkmax)
+        if finframe > len(vidavg):
+            finframe = len(vidavg)
         finframe_list.append(finframe)
-        vidavg_list.append(vidavg.index(chunkmax))
+
+        print(f'Video is {len(vidavg)} frames long')
+        print(f'First frame is {vidavg.index(chunkmax)}')
         print('Final frame would be:', finframe)
 
         print(f'--- {time.time() - start_time} seconds ---')
@@ -195,16 +209,3 @@ def exportvideo():
         else:
             print('All videos edited together!')
 exportvideo()
-
-def cleanup():
-    color_folders = os.listdir('frames/color/') # Delete colored frames
-    for folders in color_folders:
-        shutil.rmtree(f'frames/color/{folders}')
-
-    gray_folders = os.listdir('frames/gray/') # Delete gray frames
-    for folders in gray_folders:
-        shutil.rmtree(f'frames/gray/{folders}')
-
-    shutil.rmtree('frames/final') # Reset final folder
-    os.mkdir(f'frames/final')
-cleanup()

@@ -6,7 +6,7 @@ This project uses the [ffmpeg-python](https://github.com/kkroening/ffmpeg-python
 
 ## Directory Guide
 - **src/** (source code)
-- **frames/** (where color and gray frames are stored for editing. **Might take up a lot of space**)
+- **frames/** (where color and gray frames are stored for editing. **Might take up a lot of space while program runs, deletes automatically when finished**)
 - **imports/** (directory for all videos you want edited)
 - **exports/** (this is where the final edited video is placed)
 
@@ -18,8 +18,8 @@ This project uses the [ffmpeg-python](https://github.com/kkroening/ffmpeg-python
 5. **Do not** open up the folders created in frames/ until the program finishes as the command prompt will deny access to that folder and break
 
 ### How to Use
-1. Delete all .gitkeep's in directories
-2. Place desired videos into **imports/**
+1. Delete all .gitkeep's in directories, program should do it automatically
+2. Place desired videos into **imports/**, ensure that they have no spaces
 3. Run **editor.py** and select any variables desired
 4. Wait for edited video to be created
 5. Enjoy your new video
