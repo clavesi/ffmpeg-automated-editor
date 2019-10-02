@@ -16,11 +16,6 @@ if args.frames is None:
     print('No framerate provided')
     sys.exit()
 
-start_time = time.time() # how long does it take to calculate averages
-videos = os.listdir('imports/')
-finframe_list = [] # global variable
-vidavg_list = [] # global varialbe
-
 def cleanup():
     # Delete all .gitkeeps
     if os.path.exists('exports/.gitkeep'):
@@ -46,6 +41,15 @@ def cleanup():
     shutil.rmtree('frames/final') # Delete final folder
     os.mkdir(f'frames/final')
 cleanup()
+
+start_time = time.time() # how long does it take to calculate averages
+videos = os.listdir('imports/')
+finframe_list = [] # global variable
+vidavg_list = [] # global varialbe
+
+if len(videos) == 0:
+    print('No videos in imports/ folder')
+    sys.exit()
 
 # Generate colored and grayscale frames for all videos
 def genframes():
@@ -104,6 +108,8 @@ def avgframes():
             vidavg.append(chunkavg)
             chunkmax = max(vidavg)
             totalavg.append(chunkavg)
+
+            currentframe.close() # Frees up memory
         
         print('avg:', mean(totalavg))
         print('max:', chunkmax)
