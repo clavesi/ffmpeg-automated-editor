@@ -16,31 +16,17 @@ if args.frames is None:
     print('No framerate provided')
     sys.exit()
 
-def cleanup():
-    # Delete all .gitkeeps
-    if os.path.exists('exports/.gitkeep'):
-        os.remove('exports/.gitkeep')
-    if os.path.exists('frames/color/.gitkeep'):
-        os.remove('frames/color/.gitkeep')
-    if os.path.exists('frames/final/.gitkeep'):
-        os.remove('frames/final/.gitkeep')
-    if os.path.exists('frames/gray/.gitkeep'):
-        os.remove('frames/gray/.gitkeep')
-    if os.path.exists('imports/.gitkeep'):
-        os.remove('imports/.gitkeep')
-
-    # Delete frame folders
-    color_folders = os.listdir('frames/color/') # Delete colored frames
-    for folders in color_folders:
-        shutil.rmtree(f'frames/color/{folders}')
-
-    gray_folders = os.listdir('frames/gray/') # Delete gray frames
-    for folders in gray_folders:
-        shutil.rmtree(f'frames/gray/{folders}')
-
-    shutil.rmtree('frames/final') # Delete final folder
-    os.mkdir(f'frames/final')
-cleanup()
+# Delete all .gitkeeps
+if os.path.exists('exports/.gitkeep'):
+    os.remove('exports/.gitkeep')
+if os.path.exists('frames/color/.gitkeep'):
+    os.remove('frames/color/.gitkeep')
+if os.path.exists('frames/final/.gitkeep'):
+    os.remove('frames/final/.gitkeep')
+if os.path.exists('frames/gray/.gitkeep'):
+    os.remove('frames/gray/.gitkeep')
+if os.path.exists('imports/.gitkeep'):
+    os.remove('imports/.gitkeep')
 
 start_time = time.time() # how long does it take to calculate averages
 videos = os.listdir('imports/')
@@ -152,11 +138,17 @@ saveframes()
 # Export clips and combine them
 def exportvideo():
     i = 0
+    global vidavg_list
+    global finframe_list
+    print(vidavg_list)
+    print(finframe_list)
+
     # Export frames into videos
     for video in videos:
         (
             ffmpeg
-            .input(f'frames/final/vid{i}-frame%04d.jpg')
+            .input(f'imports/{video}')
+            .trim(start_frame=vidavg_list[i], end_frame=finframe_list[i])
             .output(f'exports/video{i+1}.mp4', framerate=args.frames)
             .overwrite_output()
             .run()
@@ -165,22 +157,18 @@ def exportvideo():
 
     # Combine all those new videos
     exports = os.listdir('exports/')
-    global vidavg_list
-    global finframe_list
-    print(vidavg_list)
-    print(finframe_list)
 
     for video in exports:
         exports = os.listdir('exports/')
         if not(len(exports) == 1): # Checks if the final output is the only one left
             if exports[0] == 'export.mp4':
-                 # rename to allow code to continue as it cannot replace it with the same name
+                # rename to allow code to continue as it cannot replace it with the same name
                 os.rename(f'exports/{exports[0]}', f'exports/vid0.mp4')
                 exports = os.listdir('exports/')
 
             if not exports[0] == 'vid0.mp4': # If two clips have NOT been combined yet
-                vid0 = ffmpeg.input(f'exports/{exports[0]}', ss=vidavg_list[0]/args.frames, t=finframe_list[0]/args.frames - vidavg_list[0]/args.frames)
-                vid1 = ffmpeg.input(f'exports/{exports[1]}', ss=vidavg_list[1]/args.frames, t=finframe_list[1]/args.frames - vidavg_list[1]/args.frames)
+                vid0 = ffmpeg.input(f'exports/{exports[0]}')
+                vid1 = ffmpeg.input(f'exports/{exports[1]}')
                 (
                     ffmpeg
                     .concat(
@@ -196,7 +184,7 @@ def exportvideo():
                 finframe_list.pop(0)
             else: # If two clips HAVE been combined
                 vid0 = ffmpeg.input(f'exports/{exports[0]}')
-                vid1 = ffmpeg.input(f'exports/{exports[1]}', ss=vidavg_list[0]/args.frames, t=finframe_list[0]/args.frames - vidavg_list[0]/args.frames)
+                vid1 = ffmpeg.input(f'exports/{exports[1]}')
                 if len(vidavg_list) > 1 and len(finframe_list) > 1:
                     vidavg_list.pop(0)
                     finframe_list.pop(0)
@@ -215,3 +203,15 @@ def exportvideo():
         else:
             print('All videos edited together!')
 exportvideo()
+
+# Delete frame folders
+color_folders = os.listdir('frames/color/') # Delete colored frames
+for folders in color_folders:
+    shutil.rmtree(f'frames/color/{folders}')
+
+gray_folders = os.listdir('frames/gray/') # Delete gray frames
+for folders in gray_folders:
+    shutil.rmtree(f'frames/gray/{folders}')
+
+shutil.rmtree('frames/final') # Delete final folder
+os.mkdir(f'frames/final')
