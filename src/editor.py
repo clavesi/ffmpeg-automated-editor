@@ -58,6 +58,18 @@ gray_folders = os.listdir('frames/gray/') # Delete gray frames
 for folders in gray_folders:
     shutil.rmtree(f'frames/gray/{folders}')
 
+# Delete all .gitkeeps
+if os.path.exists('exports/.gitkeep'):
+    os.remove('exports/.gitkeep')
+if os.path.exists('frames/color/.gitkeep'):
+    os.remove('frames/color/.gitkeep')
+if os.path.exists('frames/final/.gitkeep'):
+    os.remove('frames/final/.gitkeep')
+if os.path.exists('frames/gray/.gitkeep'):
+    os.remove('frames/gray/.gitkeep')
+if os.path.exists('imports/.gitkeep'):
+    os.remove('imports/.gitkeep')
+
 start_time = time.time() # how long does it take to calculate averages
 videos = os.listdir('imports/')
 finframe_list = [] # global variable
@@ -217,3 +229,15 @@ def exportvideo():
         else:
             print('All videos edited together!')
 exportvideo()
+
+# Delete frame folders
+color_folders = os.listdir('frames/color/') # Delete colored frames
+for folders in color_folders:
+    shutil.rmtree(f'frames/color/{folders}')
+
+gray_folders = os.listdir('frames/gray/') # Delete gray frames
+for folders in gray_folders:
+    shutil.rmtree(f'frames/gray/{folders}')
+
+shutil.rmtree('frames/final') # Delete final folder
+os.mkdir(f'frames/final')
