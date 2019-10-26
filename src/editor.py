@@ -43,6 +43,18 @@ args.resolution = args.resolution.split(":")
 width = int(args.resolution[0])
 height = int(args.resolution[1])
 
+# Delete all .gitkeeps
+if os.path.exists('exports/.gitkeep'):
+    os.remove('exports/.gitkeep')
+if os.path.exists('frames/color/.gitkeep'):
+    os.remove('frames/color/.gitkeep')
+if os.path.exists('frames/final/.gitkeep'):
+    os.remove('frames/final/.gitkeep')
+if os.path.exists('frames/gray/.gitkeep'):
+    os.remove('frames/gray/.gitkeep')
+if os.path.exists('imports/.gitkeep'):
+    os.remove('imports/.gitkeep')
+
 start_time = time.time() # how long does it take to calculate averages
 videos = os.listdir('imports/')
 finframe_list = [] # global variable
@@ -61,6 +73,9 @@ def cleanup():
     if os.path.exists('imports/.gitkeep'):
         os.remove('imports/.gitkeep')
 cleanup()
+if len(videos) == 0:
+    print('No videos in imports/ folder')
+    sys.exit()
 
 # Generate colored and grayscale frames for all videos
 def genframes():
@@ -119,6 +134,8 @@ def avgframes():
             vidavg.append(chunkavg)
             chunkmax = max(vidavg)
             totalavg.append(chunkavg)
+
+            currentframe.close() # Frees up memory
         
             currentframe.close()
 
@@ -188,7 +205,7 @@ def exportvideo():
         exports = os.listdir('exports/')
         if not(len(exports) == 1): # Checks if the final output is the only one left
             if exports[0] == 'export.mp4':
-                 # rename to allow code to continue as it cannot replace it with the same name
+                # rename to allow code to continue as it cannot replace it with the same name
                 os.rename(f'exports/{exports[0]}', f'exports/vid0.mp4')
                 exports = os.listdir('exports/')
 
