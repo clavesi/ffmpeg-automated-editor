@@ -10,11 +10,53 @@ import argparse
 import sys
 
 parser = argparse.ArgumentParser(description='All avaliable variables that you can access')
-parser.add_argument( '-fps', '--framerate', dest='frames', type=int, help='framerate of the video, int')
+parser.add_argument( '-fps', dest='frames', default=30, type=int, help='framerate of the video [int]')
+parser.add_argument( '-cs', dest='chunk', default='5:9', type=str, 
+        help='size for each frame chunk, xth out of every y pixels, smaller will take longer [x:y]')
+parser.add_argument( '-cl', dest='length', default='5:7', type=str,
+        help='range for how long each cut clips are [x:y]')
+parser.add_argument( '-r', dest='resolution', default='1920:1080', type=str,
+        help='resolution of the final video [w:h]')
+
 args = parser.parse_args()
-if args.frames is None:
-    print('No framerate provided')
-    sys.exit()
+
+#Chunk Size
+args.chunk = args.chunk.split(":")
+center = int(args.chunk[0])
+chunksize = int(args.chunk[1])
+
+#Clip Length
+args.length = args.length.split(":")
+shortlength = int(args.length[0])
+longlength = int(args.length[1])
+
+#Resolution
+args.resolution = args.resolution.split(":")
+width = int(args.resolution[0])
+height = int(args.resolution[1])
+
+print(center, chunksize)
+print(shortlength, longlength)
+print(width, height)
+
+# Delete all .gitkeeps
+if os.path.exists('exports/.gitkeep'):
+    os.remove('exports/.gitkeep')
+if os.path.exists('frames/color/.gitkeep'):
+    os.remove('frames/color/.gitkeep')
+if os.path.exists('frames/gray/.gitkeep'):
+    os.remove('frames/gray/.gitkeep')
+if os.path.exists('imports/.gitkeep'):
+    os.remove('imports/.gitkeep')
+
+# Delete frame folders
+color_folders = os.listdir('frames/color/') # Delete colored frames
+for folders in color_folders:
+    shutil.rmtree(f'frames/color/{folders}')
+
+gray_folders = os.listdir('frames/gray/') # Delete gray frames
+for folders in gray_folders:
+    shutil.rmtree(f'frames/gray/{folders}')
 
 # Delete all .gitkeeps
 if os.path.exists('exports/.gitkeep'):
@@ -83,9 +125,9 @@ def avgframes():
             totalframes.append(currentframe)
 
             for y in range(currentframe.size[1]): # check every y value
-                if y % 9 == 5: # but only every 5th out of 9th
+                if y % chunksize == center: # but only every 5th out of 9th
                     for x in range(currentframe.size[0]):
-                        if x % 9 == 5:
+                        if x % chunksize == center:
                             chunk.append(pixel[x, y])
             numframes += 1
             
@@ -96,13 +138,13 @@ def avgframes():
             totalavg.append(chunkavg)
 
             currentframe.close() # Frees up memory
-        
+
         print('avg:', mean(totalavg))
         print('max:', chunkmax)
         vidavg_list.append(vidavg.index(chunkmax))
 
         # Vary clip lengths
-        finframe = (randint(3, 7) * args.frames) + vidavg.index(chunkmax)
+        finframe = (randint(shortlength, longlength) * args.frames) + vidavg.index(chunkmax)
         if finframe > len(vidavg):
             finframe = len(vidavg)
         finframe_list.append(finframe)
@@ -117,23 +159,7 @@ def avgframes():
     print(mean(totalavg))
     print(max(totalavg))
     print('# of frames:', numframes)
-    print(vidavg_list)
-    print(finframe_list)
 avgframes()
-
-# Save all frames to the frames/final folder for combining
-def saveframes():
-    i = 0
-    for video in videos:
-        (
-            ffmpeg
-            .input(f'frames/color/video-{videos.index(video)}/frame%04d.jpg')
-            .output(f'frames/final/vid{i}-frame%04d.jpg')
-            .overwrite_output()
-            .run()
-        )
-        i += 1
-saveframes()
 
 # Export clips and combine them
 def exportvideo():
@@ -143,12 +169,13 @@ def exportvideo():
     print(vidavg_list)
     print(finframe_list)
 
-    # Export frames into videos
+    # Cut up videos into their clip form
     for video in videos:
         (
             ffmpeg
             .input(f'imports/{video}')
             .trim(start_frame=vidavg_list[i], end_frame=finframe_list[i])
+            .filter('scale', width, height)
             .output(f'exports/video{i+1}.mp4', framerate=args.frames)
             .overwrite_output()
             .run()
@@ -157,7 +184,6 @@ def exportvideo():
 
     # Combine all those new videos
     exports = os.listdir('exports/')
-
     for video in exports:
         exports = os.listdir('exports/')
         if not(len(exports) == 1): # Checks if the final output is the only one left
