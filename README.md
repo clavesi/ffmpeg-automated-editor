@@ -11,15 +11,19 @@ This project uses the [ffmpeg-python](https://github.com/kkroening/ffmpeg-python
 - **exports/** (this is where the final edited video is placed)
 
 ### **Do Not's**
-1. **Do not** set the framerate too high if you do not have a large amount of RAM. Too many loaded frames will take up all of it.
-2. **Do not** use videos that are short as it cannot yet choose the last frame if the ideal last frame is not in the video.
-3. **Do not** place videos with wildly different base framerates and use a even different framerate- the program will essentially cut it out by accident.
-4. **Do not** put a folder into the imports folder as it will read that but cannot access those files
-5. **Do not** open up the folders created in frames/ until the program finishes as the command prompt will deny access to that folder and break
+1. **Do not** place videos with wildly different base framerates and use a even different framerate- the program will essentially cut it out by accident.
+2. **Do not** put a folder into the imports folder as it will read that but cannot access those files
+3. **Do not** open up the folders created in frames/ until the program finishes as the command prompt will deny access to that folder and break
 
 ### How to Use
-1. Delete all .gitkeep's in directories, program should do it automatically
-2. Place desired videos into **imports/**, ensure that they have no spaces
-3. Run **editor.py** and select any variables desired
-4. Wait for edited video to be created
-5. Enjoy your new video
+1. Place desired videos into **imports/**, ensuring that the filenames have **no spaces**
+2. Run **editor.py** and select any variables desired
+3. Wait for edited video to be created
+4. Enjoy your new video
+
+### Arguments
+| Arg      | Desc          |
+| -------- |:-------------:|
+| -fps     | framerate of the video [int] <br> default=30|
+| -cs      | size for each frame chunk, <br>xth out of every y pixels, <br>smaller will take longer [x:y]<br> default=5:9|
+| -r       | resolution of the final video [w:h]  <br> default=30 |
