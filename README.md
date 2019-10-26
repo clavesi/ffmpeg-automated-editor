@@ -25,5 +25,6 @@ This project uses the [ffmpeg-python](https://github.com/kkroening/ffmpeg-python
 | Arg      | Desc          |
 | -------- |:-------------:|
 | -fps     | framerate of the video [int] <br> default=30|
-| -cs      | size for each frame chunk, <br>xth out of every y pixels, <br>smaller will take longer [x:y]<br> default=5:9|
-| -r       | resolution of the final video [w:h]  <br> default=30 |
+| -cs      | size for each frame chunk, xth out of every y pixels, smaller will take longer [x:y]<br> default=5:9|
+| -cl      | range for how long each cut clips are [x:y]  <br> default=5:7 |
+| -r       | resolution of the final video [w:h]  <br> default=1920:1080 |
