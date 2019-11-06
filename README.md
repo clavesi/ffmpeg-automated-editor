@@ -1,4 +1,4 @@
-# MoviePy Editing Automation
+# Automated Editor
 An application which can automate videos together in a simple manner. Idea based off of [Devon Crawford's attempt](https://github.com/DevonCrawford/Video-Editing-Automation) in which he is using the [ffmpeg](https://ffmpeg.org/) library.
 
 ## How It Works
