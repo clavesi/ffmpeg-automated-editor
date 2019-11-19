@@ -11,7 +11,7 @@ This project uses the [ffmpeg-python](https://github.com/kkroening/ffmpeg-python
 - **exports/** (this is where the final edited video is placed)
 
 ### **Do Not's**
-1. **Do not** place videos with wildly different base framerates and use a even different framerate- the program will essentially cut it out by accident.
+1. **Do not** place videos with wildly different base framerates and use an even different framerate- the program will essentially cut it out by accident.
 2. **Do not** put a folder into the imports folder as it will read that but cannot access those files
 3. **Do not** open up the folders created in frames/ until the program finishes as the command prompt will deny access to that folder and break
 
