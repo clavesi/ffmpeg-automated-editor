@@ -1,6 +1,8 @@
 # Automated Editor
 An application which can automate videos together in a simple manner. Idea based off of [Devon Crawford's attempt](https://github.com/DevonCrawford/Video-Editing-Automation) in which he is using the [ffmpeg](https://ffmpeg.org/) library.
 
+*Read this in: [Français](README.fr.md)*
+
 ## How It Works
 This project uses the [ffmpeg-python](https://github.com/kkroening/ffmpeg-python) library to handle video processing and the [PIL](http://www.pythonware.com/products/pil/) for image processing. To run this you'll need to first [install ffmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg) and ffmpeg-python
 
@@ -12,7 +14,7 @@ This project uses the [ffmpeg-python](https://github.com/kkroening/ffmpeg-python
 
 ### **Do Not's**
 1. **Do not** place videos with wildly different base framerates and use an even different framerate- the program will essentially cut it out by accident.
-2. **Do not** put a folder into the imports folder as it will read that but cannot access those files
+2. **Do not** put a folder into the imports/ folder as it will read that but cannot access those files
 3. **Do not** open up the folders created in frames/ until the program finishes as the command prompt will deny access to that folder and break
 
 ### How to Use
