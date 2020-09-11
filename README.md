@@ -9,11 +9,11 @@ This project uses the [ffmpeg-python](https://github.com/kkroening/ffmpeg-python
 ## Directory Guide
 - **src/** (source code)
 - **frames/** (where color and gray frames are stored for editing. **Might take up a lot of space while program runs, deletes automatically when finished**)
-- **imports/** (directory for all videos you want edited)
+- **imports/** (directory for all videos to be edited)
 - **exports/** (this is where the final edited video is placed)
 
 ### **Do Not's**
-1. **Do not** place videos with wildly different base framerates and use an even different framerate- the program will essentially cut it out by accident.
+1. **Do not** place videos with wildly different base framerates and then use an even different framerate as an argument - the program will cut videos very short
 2. **Do not** put a folder into the imports/ folder as it will read that but cannot access those files
 3. **Do not** open up the folders created in frames/ until the program finishes as the command prompt will deny access to that folder and break
 
