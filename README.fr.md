@@ -4,7 +4,7 @@ Une application capable d'automatiser des vidéos ensemble de manière simple. L
 *Lire ceci en: [English](README.md)*
 
 ## Comment Ça Marche
-Ce projet utilise [ffmpeg-python](https://github.com/kkroening/ffmpeg-python) pour le traitement de la vidéo et la [PIL](http://www.pythonware.com/products/pil/) pour le traitement d'image. Pour l'exécuter, vous devez [installer ffmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg) et ffmpeg-python.
+Ce projet utilise [ffmpeg-python](https://github.com/kkroening/ffmpeg-python) pour le traitement de la vidéo et la [PIL](http://www.pythonware.com/products/pil/) pour le traitement de l'image. Pour l'exécuter, vous devez [installer ffmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg) et ffmpeg-python.
 
 ## Guide de Répertoire
 - **src/** (code source)
